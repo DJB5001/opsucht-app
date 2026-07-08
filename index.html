@@ -1,0 +1,1547 @@
+<!DOCTYPE html><html lang="de"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OPSUCHT.INFO</title>
+
+  <!-- PWA: als App installierbar machen -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#0f1729">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="OPSUCHT">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+  <script src="js/chart.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/user-profile.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+
+<body class="loading">
+  <!-- Disclaimer Modal -->
+  <div id="disclaimerModal" class="modal disclaimer-modal" style="display: none;">
+    <div class="modal-content disclaimer-content">
+      <div class="disclaimer-icon-wrapper">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="disclaimer-icon">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+      </div>
+      <h2 class="disclaimer-title">WICHTIGER HINWEIS</h2>
+      <p class="disclaimer-text">
+        Dies ist <strong>KEINE</strong> offizielle Webseite von OPSUCHT.NET!
+      </p>
+      <p class="disclaimer-subtext">
+        Dies ist ein reines Community-Projekt. Wir stehen in keiner direkten Verbindung zum Server-Team.
+      </p>
+      <button class="auth-submit-btn disclaimer-btn" onclick="closeDisclaimerModal()">Verstanden</button>
+    </div>
+  </div>
+
+  <div id="bg-reveal-overlay" class="bg-reveal-overlay"></div>
+  <canvas id="glitter-canvas"></canvas>
+
+  <div id="impressumModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeImpressumModal()" aria-label="Schließen">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <h2 style="margin-top:0;">Impressum</h2>
+      <p>
+        Jonah Potthast<br>
+        Baumschulallee 2<br>
+        53115 Bonn<br>
+        Deutschland
+      </p>
+      <p><strong>Kontakt:</strong><br>jonahpotthast@gmail.com</p>
+    </div>
+  </div>
+
+  <div id="privacyModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closePrivacyModal()" aria-label="Schließen">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <h2 style="margin-top:0;">Datenschutzerklärung</h2>
+
+      <h3>1. Allgemeine Hinweise</h3>
+      <p>Der Schutz personenbezogener Daten ist uns ein wichtiges Anliegen. Diese Datenschutzerklärung informiert über Art, Umfang und Zweck der Verarbeitung personenbezogener Daten auf unserer Webseite.</p>
+      <p>Unsere Webseite ist ein unabhängiges Community-Projekt und steht in keiner Verbindung zu OPSUCHT oder der Interwebmedia GmbH.</p>
+
+      <hr>
+
+      <h3>2. Erhebung und Verarbeitung personenbezogener Daten</h3>
+      <p>Wir erheben und verarbeiten personenbezogene Daten nur, soweit dies technisch erforderlich ist oder du uns diese freiwillig zur Verfügung stellst.</p>
+      <p>Dazu gehören insbesondere:</p>
+      <ul>
+        <li>E-Mail-Adressen</li>
+        <li>Benutzername / Account-Daten</li>
+        <li>Minecraft-Account-Daten (z. B. Username, UUID sofern verwendet)</li>
+        <li>IP-Adresse (ggf. anonymisiert)</li>
+        <li>Nutzungsdaten (z. B. Seitenaufrufe, Interaktionen)</li>
+      </ul>
+
+      <hr>
+
+      <h3>3. Zweck der Datenverarbeitung</h3>
+      <p>Die Datenverarbeitung erfolgt zu folgenden Zwecken:</p>
+      <ul>
+        <li>Bereitstellung und Betrieb der Webseite</li>
+        <li>Nutzerverwaltung (Login / Accounts)</li>
+        <li>Verbesserung der Webseite und Funktionen</li>
+        <li>Analyse des Nutzerverhaltens</li>
+        <li>Sicherheit und Missbrauchsprävention</li>
+      </ul>
+
+      <hr>
+
+      <h3>4. Analyse-Tools</h3>
+      <p>Wir verwenden Analyse-Tools, um das Verhalten der Nutzer besser zu verstehen und unsere Webseite zu optimieren.</p>
+      <p>Dabei können folgende Daten verarbeitet werden:</p>
+      <ul>
+        <li>Besuchte Seiten</li>
+        <li>Verweildauer</li>
+        <li>Geräte- und Browserinformationen</li>
+      </ul>
+      <p>Die Auswertung erfolgt in der Regel anonymisiert und dient ausschließlich statistischen Zwecken.</p>
+
+      <hr>
+
+      <h3>5. Verwendung von Drittanbietern (Supabase)</h3>
+      <p>Für Funktionen wie Authentifizierung oder Datenspeicherung nutzen wir den Dienst Supabase.</p>
+      <p>Dabei können personenbezogene Daten verarbeitet und auf den Servern von Supabase gespeichert werden.</p>
+      <p>Weitere Informationen: <a href="https://supabase.com/privacy" target="_blank" style="color: var(--accent-color1);">https://supabase.com/privacy</a></p>
+
+      <hr>
+
+      <h3>6. Cookies</h3>
+      <p>Unsere Webseite verwendet Cookies zur Verbesserung der Benutzerfreundlichkeit und Funktionalität.</p>
+      <p>Es können verwendet werden:</p>
+      <ul>
+        <li>notwendige Cookies</li>
+        <li>funktionale Cookies</li>
+        <li>Analyse-Cookies</li>
+      </ul>
+      <p>Du kannst Cookies jederzeit in deinem Browser deaktivieren.</p>
+
+      <hr>
+
+      <h3>7. Speicherung und Löschung von Daten</h3>
+      <p>Personenbezogene Daten werden nur so lange gespeichert, wie es für den jeweiligen Zweck erforderlich ist oder gesetzliche Aufbewahrungspflichten bestehen.</p>
+      <p>Du hast jederzeit das Recht, die Löschung deiner Daten zu verlangen.</p>
+
+      <hr>
+
+      <h3>8. Datensicherheit</h3>
+      <p>Wir setzen technische und organisatorische Maßnahmen ein, um deine Daten bestmöglich zu schützen.</p>
+      <p>Trotz sorgfältiger Sicherung kann ein vollständiger Schutz vor Zugriffen durch Dritte nicht garantiert werden.</p>
+
+      <hr>
+
+      <h3>9. Haftungsausschluss für Datenverluste</h3>
+      <p>Wir übernehmen keine Haftung für Schäden, die durch unbefugte Zugriffe auf Daten entstehen, sofern diese nicht auf vorsätzlichem oder grob fahrlässigem Verhalten unsererseits beruhen.</p>
+      <p>Bitte beachte, dass die Datenübertragung im Internet grundsätzlich Sicherheitslücken aufweisen kann.</p>
+
+      <hr>
+
+      <h3>10. Rechte der Nutzer</h3>
+      <p>Du hast das Recht auf:</p>
+      <ul>
+        <li>Auskunft über deine gespeicherten Daten</li>
+        <li>Berichtigung unrichtiger Daten</li>
+        <li>Löschung deiner Daten</li>
+        <li>Einschränkung der Verarbeitung</li>
+        <li>Widerspruch gegen die Verarbeitung</li>
+        <li>Datenübertragbarkeit</li>
+      </ul>
+
+      <hr>
+
+      <h3>11. Widerruf der Einwilligung</h3>
+      <p>Du kannst eine erteilte Einwilligung jederzeit widerrufen.</p>
+
+      <hr>
+
+      <h3>12. Änderungen</h3>
+      <p>Wir behalten uns vor, diese Datenschutzerklärung jederzeit anzupassen.</p>
+
+      <hr>
+
+      <h3>13. Kontakt</h3>
+      <p>Bei Fragen zum Datenschutz:</p>
+      <p>E-Mail: <a href="mailto:jonahpotthast@gmail.com" style="color: var(--accent-color1);">jonahpotthast@gmail.com</a></p>
+
+    </div>
+  </div>
+
+  <div id="agbModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeAgbModal()" aria-label="Schließen">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <h2 style="margin-top:0;">Allgemeine Geschäftsbedingungen (AGB)</h2>
+      <p><strong>für OPSuchtWeb</strong><br>(opsucht.info & betteropweb.net)</p>
+
+      <h3>1. Geltungsbereich</h3>
+      <p>Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für die Nutzung der Webseiten https://opsucht.info und
+        https://betteropweb.net sowie aller zugehörigen Dienste, Funktionen und Inhalte (nachfolgend „OPSuchtWeb").</p>
+      <p>OPSuchtWeb ist eine unabhängige Plattform und steht in keiner offiziellen Verbindung zu OPSucht oder dessen
+        Betreibern, sofern nicht ausdrücklich anders angegeben.</p>
+      <p>Mit dem Zugriff auf eine der genannten Webseiten erklärst du dich mit diesen AGB einverstanden.</p>
+
+      <h3>2. Leistungsbeschreibung</h3>
+      <p>OPSuchtWeb stellt Nutzern statistische Auswertungen, Informationen und Übersichten zu unter anderem:</p>
+      <ul>
+        <li>Auktionshaus-Daten</li>
+        <li>Marktpreisen</li>
+        <li>Shard-Händler-Preisen</li>
+        <li>Preisverläufen, Diagrammen und Filtern</li>
+      </ul>
+      <p>bereit.</p>
+      <p>Alle bereitgestellten Inhalte dienen ausschließlich Informationszwecken.<br>Es besteht kein Anspruch auf
+        Vollständigkeit, Aktualität oder Fehlerfreiheit.</p>
+
+      <h3>3. Nutzung der Webseite</h3>
+      <p>Die Nutzung von OPSuchtWeb ist grundsätzlich kostenlos und ohne Registrierung möglich, sofern nicht anders
+        angegeben.</p>
+      <p>Der Nutzer verpflichtet sich:</p>
+      <ul>
+        <li>die Webseite nicht missbräuchlich zu verwenden,</li>
+        <li>keine automatisierten Zugriffe (z. B. Bots, Scraper oder Crawler) ohne ausdrückliche Genehmigung
+          einzusetzen,</li>
+        <li>keine Funktionen, Daten oder Systeme der Webseite zu manipulieren oder zu beeinträchtigen.</li>
+      </ul>
+
+      <h3>4. Datengrundlage & Haftung für Inhalte</h3>
+      <p>Die dargestellten Daten basieren auf öffentlich zugänglichen Informationen, automatisierten Datenerhebungen
+        sowie eigenen Auswertungen.</p>
+      <p>Trotz größter Sorgfalt kann keine Gewähr für die Richtigkeit, Vollständigkeit oder Aktualität der Inhalte
+        übernommen werden.</p>
+      <p>OPSuchtWeb übernimmt keine Haftung für Entscheidungen oder Handlungen, die Nutzer auf Grundlage der
+        bereitgestellten Informationen treffen.</p>
+
+      <h3>5. Verfügbarkeit</h3>
+      <p>OPSuchtWeb bemüht sich um eine möglichst unterbrechungsfreie Verfügbarkeit der Webseiten.<br>Ein Anspruch auf
+        permanente oder jederzeitige Erreichbarkeit besteht jedoch nicht.</p>
+      <p>Wartungsarbeiten, technische Störungen oder externe Einflüsse können zu zeitweisen Einschränkungen oder
+        Ausfällen führen.</p>
+
+      <h3>6. Änderungen und Weiterentwicklung</h3>
+      <p>OPSuchtWeb wird kontinuierlich weiterentwickelt.<br>Wir behalten uns vor, Inhalte, Funktionen oder Dienste
+        jederzeit zu ändern, zu erweitern oder ganz oder teilweise einzustellen.</p>
+      <p>Ein Anspruch auf bestimmte Funktionen oder Inhalte besteht nicht.</p>
+
+      <h3>7. Geistiges Eigentum</h3>
+      <p>Alle Inhalte auf OPSuchtWeb (insbesondere Texte, Grafiken, Logos, Diagramme, Designs und Quellcode) unterliegen
+        dem Urheberrecht.</p>
+      <p>Ohne vorherige ausdrückliche Zustimmung ist es nicht gestattet, Inhalte zu kopieren, zu vervielfältigen,
+        weiterzugeben oder kommerziell zu nutzen.</p>
+
+      <h3>8. Externe Links</h3>
+      <p>OPSuchtWeb kann Links zu externen Webseiten oder Diensten enthalten (z. B. Discord, Twitch oder Partnerseiten).
+      </p>
+      <p>Für die Inhalte externer Webseiten übernehmen wir keine Haftung.<br>Zum Zeitpunkt der Verlinkung waren keine
+        rechtswidrigen Inhalte erkennbar.</p>
+
+      <h3>9. Haftungsbeschränkung</h3>
+      <p>OPSuchtWeb haftet nur bei Vorsatz oder grober Fahrlässigkeit.<br>Eine Haftung für:</p>
+      <ul>
+        <li>fehlerhafte Preisangaben,</li>
+        <li>Datenverluste,</li>
+        <li>entgangene Gewinne,</li>
+        <li>technische Störungen</li>
+      </ul>
+      <p>ist, soweit gesetzlich zulässig, ausgeschlossen.</p>
+
+      <h3>10. Datenschutz</h3>
+      <p>Der Schutz personenbezogener Daten ist uns wichtig.<br>Details zur Verarbeitung von Daten sind in der
+        Datenschutzerklärung geregelt, die Bestandteil dieser AGB ist.</p>
+
+      <h3>11. Missbrauch & Sperrung</h3>
+      <p>Bei Verstößen gegen diese AGB behalten wir uns vor, den Zugriff auf die Webseiten ganz oder teilweise
+        einzuschränken oder zu sperren.</p>
+      <p>Ein Anspruch auf erneuten Zugang besteht nicht.</p>
+
+      <h3>12. Änderungen der AGB</h3>
+      <p>Diese AGB können jederzeit angepasst oder aktualisiert werden.<br>Es gilt jeweils die zum Zeitpunkt der Nutzung
+        aktuelle Version.</p>
+
+      <h3>13. Schlussbestimmungen</h3>
+      <p>Sollten einzelne Bestimmungen dieser AGB ganz oder teilweise unwirksam sein, bleibt die Wirksamkeit der übrigen
+        Regelungen unberührt.</p>
+      <p>Es gilt das Recht der Bundesrepublik Deutschland, soweit gesetzlich zulässig.</p>
+    </div>
+  </div>
+
+  <div id="legalModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeLegalModal()" aria-label="Schließen">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <h2 style="margin-top:0;">Rechtliches</h2>
+
+      <div class="legal-section">
+        <h2 style="margin-top:0;">Impressum</h2>
+        <p>
+          Jonah Potthast<br>
+          Baumschulallee 2<br>
+          53115 Bonn<br>
+          Deutschland
+        </p>
+        <p><strong>Kontakt:</strong><br>jonahpotthast@gmail.com</p>
+      </div>
+
+      <hr style="border: 0; border-top: 1px solid var(--border); margin: 2rem 0;">
+
+      <div class="legal-section">
+        <h2 style="margin-top:0;">Datenschutzerklärung</h2>
+        <p><strong>für https://betteropweb.net/</strong></p>
+
+        <h3>1) Information über die Erhebung personenbezogener Daten und Kontaktdaten des Verantwortlichen</h3>
+        <p><strong>1.1</strong><br>
+          Wir freuen uns über Ihren Besuch auf unserer Website https://betteropweb.net/, einem privaten,
+          nicht-kommerziellen Minecraft-Projekt.<br>
+          Der Schutz Ihrer personenbezogenen Daten ist uns ein wichtiges Anliegen. Nachfolgend informieren wir Sie
+          darüber, welche Daten bei der Nutzung dieser Website verarbeitet werden.<br>
+          Personenbezogene Daten sind alle Daten, mit denen Sie persönlich identifiziert werden können.</p>
+
+        <p><strong>1.2 Verantwortlicher im Sinne der DSGVO</strong><br>
+          Jonah Potthast<br>
+          Privates Minecraft-Projekt<br>
+          Deutschland<br>
+          E-Mail: jonahpotthast@gmail.com<br><br>
+          <em>Hinweis: Bei rein privatem Betrieb ist die Angabe einer vollständigen Postadresse nicht zwingend
+            erforderlich. Eine Kontaktmöglichkeit per E-Mail ist jedoch empfohlen.</em>
+        </p>
+
+        <p><strong>1.3</strong><br>
+          Diese Website nutzt aus Sicherheitsgründen eine SSL- bzw. TLS-Verschlüsselung.<br>
+          Eine verschlüsselte Verbindung erkennen Sie an „https://" sowie am Schloss-Symbol in der Browserzeile.</p>
+
+        <h3>2) Datenerfassung beim Besuch unserer Website</h3>
+        <p>Bei der rein informatorischen Nutzung unserer Website erheben wir nur die Daten, die Ihr Browser automatisch
+          an
+          unseren Server übermittelt (sogenannte Server-Logfiles):</p>
+        <ul>
+          <li>Besuchte Seite</li>
+          <li>Datum und Uhrzeit des Zugriffs</li>
+          <li>Übertragene Datenmenge</li>
+          <li>Referrer-URL</li>
+          <li>Browsertyp und Browserversion</li>
+          <li>Betriebssystem</li>
+          <li>IP-Adresse (gekürzt bzw. anonymisiert, sofern technisch möglich)</li>
+        </ul>
+        <p>Diese Daten werden nicht mit anderen Datenquellen zusammengeführt und dienen ausschließlich der technischen
+          Überwachung sowie der Gewährleistung eines stabilen und sicheren Betriebs.</p>
+        <p><strong>Rechtsgrundlage:</strong><br>Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an Sicherheit und
+          Stabilität der Website)</p>
+
+        <h3>3) Cookies</h3>
+        <p>Diese Website verwendet ausschließlich technisch notwendige Cookies.<br>
+          Cookies sind kleine Textdateien, die auf Ihrem Endgerät gespeichert werden und für grundlegende Funktionen der
+          Website erforderlich sind (z. B. Seitendarstellung oder Sicherheit).</p>
+        <p>❌ Es werden keine Analyse-, Tracking- oder Marketing-Cookies eingesetzt.</p>
+        <p><strong>Rechtsgrundlage:</strong><br>Art. 6 Abs. 1 lit. f DSGVO (technisch notwendige Cookies)</p>
+        <p>Sie können Cookies jederzeit über die Einstellungen Ihres Browsers löschen oder deaktivieren.<br>
+          Die Funktionalität der Website kann dadurch eingeschränkt sein.</p>
+
+        <h3>4) Kontaktaufnahme</h3>
+        <p>Wenn Sie uns per E-Mail kontaktieren, werden die von Ihnen übermittelten Angaben ausschließlich zur
+          Bearbeitung
+          Ihrer Anfrage gespeichert.<br>
+          Eine Weitergabe an Dritte erfolgt nicht.</p>
+        <p><strong>Rechtsgrundlage:</strong><br>Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der Bearbeitung
+          von
+          Anfragen)</p>
+
+        <h3>5) Externe Links</h3>
+        <p>Unsere Website kann Links zu externen Websites enthalten (z. B. Minecraft-Communities oder
+          Projektseiten).<br>
+          Für Inhalte und Datenschutzpraktiken externer Websites sind ausschließlich deren jeweilige Betreiber
+          verantwortlich.<br>
+          Bitte beachten Sie die dort geltenden Datenschutzerklärungen.</p>
+
+        <h3>6) Minderjährigenschutz</h3>
+        <p>Dieses Projekt richtet sich nicht gezielt an Kinder unter 13 Jahren.<br>
+          Personenbezogene Daten von Minderjährigen werden nicht wissentlich erhoben.<br>
+          Sollten dennoch entsprechende Daten übermittelt worden sein, werden diese nach Kenntniserlangung unverzüglich
+          gelöscht.</p>
+
+        <h3>7) Rechte der betroffenen Person</h3>
+        <p>Sie haben gemäß DSGVO folgende Rechte:</p>
+        <ul>
+          <li>Auskunft über Ihre gespeicherten personenbezogenen Daten (Art. 15 DSGVO)</li>
+          <li>Berichtigung unrichtiger Daten (Art. 16 DSGVO)</li>
+          <li>Löschung Ihrer Daten (Art. 17 DSGVO)</li>
+          <li>Einschränkung der Verarbeitung (Art. 18 DSGVO)</li>
+          <li>Datenübertragbarkeit (Art. 20 DSGVO)</li>
+          <li>Widerruf erteilter Einwilligungen (Art. 7 Abs. 3 DSGVO)</li>
+          <li>Beschwerde bei einer Datenschutz-Aufsichtsbehörde (Art. 77 DSGVO)</li>
+        </ul>
+
+        <h3>8) Widerspruchsrecht</h3>
+        <p>Sofern Ihre personenbezogenen Daten auf Grundlage von berechtigten Interessen verarbeitet werden, haben Sie
+          das
+          Recht, gemäß Art. 21 DSGVO jederzeit Widerspruch einzulegen.</p>
+
+        <h3>9) Speicherdauer</h3>
+        <p>Personenbezogene Daten werden nur so lange gespeichert, wie dies für den jeweiligen Zweck erforderlich ist
+          oder
+          gesetzliche Aufbewahrungsfristen bestehen.<br>
+          Anschließend erfolgt eine Löschung.</p>
+      </div>
+
+      <hr style="border: 0; border-top: 1px solid var(--border); margin: 2rem 0;">
+
+      <div class="legal-section">
+        <h2 style="margin-top:0;">Allgemeine Geschäftsbedingungen (AGB)</h2>
+        <p><strong>für OPSuchtWeb</strong><br>(opsucht.info & betteropweb.net)</p>
+
+        <h3>1. Geltungsbereich</h3>
+        <p>Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für die Nutzung der Webseiten https://opsucht.info und
+          https://betteropweb.net sowie aller zugehörigen Dienste, Funktionen und Inhalte (nachfolgend „OPSuchtWeb").
+        </p>
+        <p>OPSuchtWeb ist eine unabhängige Plattform und steht in keiner offiziellen Verbindung zu OPSucht oder dessen
+          Betreibern, sofern nicht ausdrücklich anders angegeben.</p>
+        <p>Mit dem Zugriff auf eine der genannten Webseiten erklärst du dich mit diesen AGB einverstanden.</p>
+
+        <h3>2. Leistungsbeschreibung</h3>
+        <p>OPSuchtWeb stellt Nutzern statistische Auswertungen, Informationen und Übersichten zu unter anderem:</p>
+        <ul>
+          <li>Auktionshaus-Daten</li>
+          <li>Marktpreisen</li>
+          <li>Shard-Händler-Preisen</li>
+          <li>Preisverläufen, Diagrammen und Filtern</li>
+        </ul>
+        <p>bereit.</p>
+        <p>Alle bereitgestellten Inhalte dienen ausschließlich Informationszwecken.<br>Es besteht kein Anspruch auf
+          Vollständigkeit, Aktualität oder Fehlerfreiheit.</p>
+
+        <h3>3. Nutzung der Webseite</h3>
+        <p>Die Nutzung von OPSuchtWeb ist grundsätzlich kostenlos und ohne Registrierung möglich, sofern nicht anders
+          angegeben.</p>
+        <p>Der Nutzer verpflichtet sich:</p>
+        <ul>
+          <li>die Webseite nicht missbräuchlich zu verwenden,</li>
+          <li>keine automatisierten Zugriffe (z. B. Bots, Scraper oder Crawler) ohne ausdrückliche Genehmigung
+            einzusetzen,</li>
+          <li>keine Funktionen, Daten oder Systeme der Webseite zu manipulieren oder zu beeinträchtigen.</li>
+        </ul>
+
+        <h3>4. Datengrundlage & Haftung für Inhalte</h3>
+        <p>Die dargestellten Daten basieren auf öffentlich zugänglichen Informationen, automatisierten Datenerhebungen
+          sowie eigenen Auswertungen.</p>
+        <p>Trotz größter Sorgfalt kann keine Gewähr für die Richtigkeit, Vollständigkeit oder Aktualität der Inhalte
+          übernommen werden.</p>
+        <p>OPSuchtWeb übernimmt keine Haftung für Entscheidungen oder Handlungen, die Nutzer auf Grundlage der
+          bereitgestellten Informationen treffen.</p>
+
+        <h3>5. Verfügbarkeit</h3>
+        <p>OPSuchtWeb bemüht sich um eine möglichst unterbrechungsfreie Verfügbarkeit der Webseiten.<br>Ein Anspruch auf
+          permanente oder jederzeitige Erreichbarkeit besteht jedoch nicht.</p>
+        <p>Wartungsarbeiten, technische Störungen oder externe Einflüsse können zu zeitweisen Einschränkungen oder
+          Ausfällen führen.</p>
+
+        <h3>6. Änderungen und Weiterentwicklung</h3>
+        <p>OPSuchtWeb wird kontinuierlich weiterentwickelt.<br>Wir behalten uns vor, Inhalte, Funktionen oder Dienste
+          jederzeit zu ändern, zu erweitern oder ganz oder teilweise einzustellen.</p>
+        <p>Ein Anspruch auf bestimmte Funktionen oder Inhalte besteht nicht.</p>
+
+        <h3>7. Geistiges Eigentum</h3>
+        <p>Alle Inhalte auf OPSuchtWeb (insbesondere Texte, Grafiken, Logos, Diagramme, Designs und Quellcode)
+          unterliegen
+          dem Urheberrecht.</p>
+        <p>Ohne vorherige ausdrückliche Zustimmung ist es nicht gestattet, Inhalte zu kopieren, zu vervielfältigen,
+          weiterzugeben oder kommerziell zu nutzen.</p>
+
+        <h3>8. Externe Links</h3>
+        <p>OPSuchtWeb kann Links zu externen Webseiten oder Diensten enthalten (z. B. Discord, Twitch oder
+          Partnerseiten).
+        </p>
+        <p>Für die Inhalte externer Webseiten übernehmen wir keine Haftung.<br>Zum Zeitpunkt der Verlinkung waren keine
+          rechtswidrigen Inhalte erkennbar.</p>
+
+        <h3>9. Haftungsbeschränkung</h3>
+        <p>OPSuchtWeb haftet nur bei Vorsatz oder grober Fahrlässigkeit.<br>Eine Haftung für:</p>
+        <ul>
+          <li>fehlerhafte Preisangaben,</li>
+          <li>Datenverluste,</li>
+          <li>entgangene Gewinne,</li>
+          <li>technische Störungen</li>
+        </ul>
+        <p>ist, soweit gesetzlich zulässig, ausgeschlossen.</p>
+
+        <h3>10. Datenschutz</h3>
+        <p>Der Schutz personenbezogener Daten ist uns wichtig.<br>Details zur Verarbeitung von Daten sind in der
+          Datenschutzerklärung geregelt, die Bestandteil dieser AGB ist.</p>
+
+        <h3>11. Missbrauch & Sperrung</h3>
+        <p>Bei Verstößen gegen diese AGB behalten wir uns vor, den Zugriff auf die Webseiten ganz oder teilweise
+          einzuschränken oder zu sperren.</p>
+        <p>Ein Anspruch auf erneuten Zugang besteht nicht.</p>
+
+        <h3>12. Änderungen der AGB</h3>
+        <p>Diese AGB können jederzeit angepasst oder aktualisiert werden.<br>Es gilt jeweils die zum Zeitpunkt der
+          Nutzung
+          aktuelle Version.</p>
+
+        <h3>13. Schlussbestimmungen</h3>
+        <p>Sollten einzelne Bestimmungen dieser AGB ganz oder teilweise unwirksam sein, bleibt die Wirksamkeit der
+          übrigen
+          Regelungen unberührt.</p>
+        <p>Es gilt das Recht der Bundesrepublik Deutschland, soweit gesetzlich zulässig.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="settingsModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeSettingsModal()" aria-label="Schließen">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <!-- Lock Overlay -->
+      <div id="settingsLockOverlay" class="lock-screen-overlay">
+        <svg xmlns="http://www.w3.org/2000/svg" class="lock-screen-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        <h3 class="lock-screen-title">Anmeldung erforderlich</h3>
+        <p class="lock-screen-text">Bitte melde dich an, um Einstellungen zu ändern.</p>
+        <button class="auth-submit-btn" onclick="closeSettingsModal(); openAuthModal()" style="width: auto; padding: 0.75rem 2rem; margin-top: 0;">Anmelden</button>
+      </div>
+      <h2 style="margin-top:0;">Einstellungen</h2>
+
+      <div class="settings-tabs">
+        <button class="settings-tab active" onclick="switchSettingsTab('design')">Design</button>
+        <button class="settings-tab" onclick="switchSettingsTab('auctions')">Auktionshaus</button>
+        <button class="settings-tab" onclick="switchSettingsTab('market')">Markt</button>
+        <button class="settings-tab" onclick="switchSettingsTab('shards')">Shards</button>
+        <button class="settings-tab" onclick="switchSettingsTab('players')">Spieler</button>
+        <button id="settings-tab-ads" class="settings-tab" onclick="switchSettingsTab('ads')" style="display: none;">Adds</button>
+        <button id="settings-tab-donations" class="settings-tab" onclick="switchSettingsTab('donations')" style="display: none;">Spenden</button>
+        <button id="settings-tab-user-codes" class="settings-tab" onclick="switchSettingsTab('user-codes')" style="display: none;">User Codes</button>
+        <button class="settings-tab" onclick="switchSettingsTab('minecraft')">Minecraft Account</button>
+        <button class="settings-tab" onclick="switchSettingsTab('account')">Account</button>
+      </div>
+
+      <!-- Design Tab -->
+      <div id="settings-design" class="settings-content-section active">
+        <button class="settings-reset-btn" onclick="resetSettings('design')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+            <path d="M3 3v5h5"></path>
+          </svg>
+          Reset
+        </button>
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <span class="settings-item-label">Item Regen</span>
+            <span class="settings-item-description">Hintergrund-Animation an/aus</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="itemRainToggle" onchange="toggleItemRain(this.checked)" checked="">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <span class="settings-item-label">Custom Hintergrund</span>
+            <span class="settings-item-description">Eigenes Bild als Hintergrund</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="customBackgroundToggle" onchange="toggleCustomBackground(this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div id="customBackgroundUrlContainer" class="settings-item" style="display: none; border-top: none; padding-top: 0;">
+          <div class="settings-item-info">
+            <span class="settings-item-label">Bild URL</span>
+          </div>
+          <div class="bg-url-input-wrapper" style="flex: 1; margin-left: 1rem;">
+            <input type="text" id="customBackgroundUrl" placeholder="https://beispiel.de/bild.jpg" onchange="saveCustomBackground(this.value)" style="width: 100%; padding: 0.5rem; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text-primary); font-size: 0.9rem;">
+          </div>
+        </div>
+
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <span class="settings-item-label">Light Mode</span>
+            <span class="settings-item-description">Helles Creme/Braun Design</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="lightModeToggle" onchange="toggleLightMode(this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <span class="settings-item-label">Custom Mode</span>
+            <span class="settings-item-description">Wähle deine eigene Akzentfarbe</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="customModeToggle" onchange="toggleCustomMode(this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div id="customColorPickerContainer" class="settings-item" style="display: none; border-top: none; padding-top: 0;">
+          <div class="settings-item-info">
+            <span class="settings-item-label">Farbwahl</span>
+          </div>
+          <div class="color-picker-wrapper">
+            <input type="color" id="customThemeColor" value="#00C9FF" oninput="applyCustomColor(this.value)" onchange="saveCustomColor(this.value)">
+            <span id="colorHexDisplay" style="font-family: monospace; font-size: 0.9rem; color: var(--text-secondary);">#00C9FF</span>
+          </div>
+        </div>
+
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <span class="settings-item-label">Custom Cursor</span>
+            <span class="settings-item-description">Folgt farblich deinem Design</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="customCursorToggle" onchange="toggleCustomCursor(this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div id="customCursorTypeContainer" class="settings-item" style="display: none; border-top: none; padding-top: 0; flex-direction: column; align-items: flex-start;">
+          <div class="settings-item-info" style="margin-bottom: 0.5rem; width: 100%;">
+            <span class="settings-item-label">Größe</span>
+          </div>
+          <div class="range-slider-wrapper" style="width: 100%; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
+            <span style="font-size: 0.8rem; color: var(--text-secondary);">Klein</span>
+            <input type="range" id="cursorSizeSlider" min="0.5" max="1.5" step="0.1" value="1.0" oninput="setCursorSize(this.value)" style="flex: 1; accent-color: var(--accent-color1);">
+            <span style="font-size: 0.8rem; color: var(--text-secondary);">Groß</span>
+          </div>
+
+          <div class="settings-item-info" style="margin-bottom: 1rem; width: 100%;">
+            <span class="settings-item-label">Cursor Stil</span>
+          </div>
+          <div class="cursor-selector-grid">
+            <div class="cursor-option" onclick="setCursorType('dot')" data-type="dot">
+              <div class="cursor-preview">
+                <div class="preview-dot"></div>
+              </div>
+              <span class="cursor-label">Standard</span>
+            </div>
+            <div class="cursor-option" onclick="setCursorType('normal')" data-type="normal">
+              <div class="cursor-preview" style="align-items: center; justify-content: center;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: -5px; margin-top: -5px;">
+                  <path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"></path>
+                  <path d="M13 13l6 6"></path>
+                </svg>
+              </div>
+              <span class="cursor-label">Mauszeiger</span>
+            </div>
+            <div class="cursor-option" onclick="setCursorType('crosshair')" data-type="crosshair">
+              <div class="cursor-preview" style="align-items: center; justify-content: center;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="22" y1="12" x2="18" y2="12"></line>
+                  <line x1="6" y1="12" x2="2" y2="12"></line>
+                  <line x1="12" y1="6" x2="12" y2="2"></line>
+                  <line x1="12" y1="22" x2="12" y2="18"></line>
+                </svg>
+              </div>
+              <span class="cursor-label">Fadenkreuz</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Auktionshaus Tab -->
+      <div id="settings-auctions" class="settings-content-section" style="display: none;">
+        <button class="settings-reset-btn" onclick="resetSettings('auctions')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+            <path d="M3 3v5h5"></path>
+          </svg>
+          Reset
+        </button>
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <span class="settings-item-label">Item-Name</span>
+            <span class="settings-item-description">Zeige den Namen des Items an</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="setting-auctions-name" checked="" onchange="toggleCardInfo('auctions', 'name', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <span class="settings-item-label">Startgebot</span>
+            <span class="settings-item-description">Zeige das Startgebot an</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="setting-auctions-startBid" checked="" onchange="toggleCardInfo('auctions', 'startBid', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <span class="settings-item-label">Aktuelles Gebot</span>
+            <span class="settings-item-description">Zeige das aktuelle Gebot an</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="setting-auctions-currentBid" checked="" onchange="toggleCardInfo('auctions', 'currentBid', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <span class="settings-item-label">Gebote</span>
+            <span class="settings-item-description">Zeige die Anzahl der Gebote an</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="setting-auctions-bids" checked="" onchange="toggleCardInfo('auctions', 'bids', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <span class="settings-item-label">Menge</span>
+            <span class="settings-item-description">Zeige die Item-Menge an</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="setting-auctions-amount" checked="" onchange="toggleCardInfo('auctions', 'amount', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <span class="settings-item-label">Dauer</span>
+            <span class="settings-item-description">Zeige den Ablauf-Timer an</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="setting-auctions-timer" checked="" onchange="toggleCardInfo('auctions', 'timer', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <span class="settings-item-label">Gebote (Bieterliste)</span>
+            <span class="settings-item-description">Zeige die Gebote in der Bieterliste an</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="setting-players-bid-amount" checked="" onchange="toggleCardInfo('players', 'bid-amount', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Markt Tab -->
+      <div id="settings-market" class="settings-content-section" style="display: none;">
+        <button class="settings-reset-btn" onclick="resetSettings('market')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+            <path d="M3 3v5h5"></path>
+          </svg>
+          Reset
+        </button>
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <span class="settings-item-label">Item-Name</span>
+            <span class="settings-item-description">Zeige den Namen im Markt an</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="setting-market-name" checked="" onchange="toggleCardInfo('market', 'name', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <span class="settings-item-label">BUY-Preis</span>
+            <span class="settings-item-description">Zeige den Ankaufspreis an</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="setting-market-buy" checked="" onchange="toggleCardInfo('market', 'buy', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <span class="settings-item-label">SELL-Preis</span>
+            <span class="settings-item-description">Zeige den Verkaufspreis an</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="setting-market-sell" checked="" onchange="toggleCardInfo('market', 'sell', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Shards Tab -->
+      <div id="settings-shards" class="settings-content-section" style="display: none;">
+        <button class="settings-reset-btn" onclick="resetSettings('shards')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+            <path d="M3 3v5h5"></path>
+          </svg>
+          Reset
+        </button>
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <span class="settings-item-label">Item-Name</span>
+            <span class="settings-item-description">Zeige den Namen der Shard-Items an</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="setting-shards-name" checked="" onchange="toggleCardInfo('shards', 'name', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <span class="settings-item-label">Wechselkurs</span>
+            <span class="settings-item-description">Zeige den aktuellen Shard-Wert an</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="setting-shards-rate" checked="" onchange="toggleCardInfo('shards', 'rate', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Spieler Tab -->
+      <div id="settings-players" class="settings-content-section" style="display: none;">
+        <button class="settings-reset-btn" onclick="resetSettings('players')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+            <path d="M3 3v5h5"></path>
+          </svg>
+          Reset
+        </button>
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <span class="settings-item-label">Spielername</span>
+            <span class="settings-item-description">Zeige den Namen des Spielers an</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="setting-players-name" checked="" onchange="toggleCardInfo('players', 'name', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <span class="settings-item-label">Auktionen</span>
+            <span class="settings-item-description">Zeige die Anzahl der Auktionen an</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="setting-players-auctions" checked="" onchange="toggleCardInfo('players', 'auctions', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <span class="settings-item-label">Gebote</span>
+            <span class="settings-item-description">Zeige die Anzahl der Gebote an</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="setting-players-bids" checked="" onchange="toggleCardInfo('players', 'bids', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <span class="settings-item-label">Eigene Gebote</span>
+            <span class="settings-item-description">Zeige deine Gebote in deinem Profil an</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="setting-auctions-bid-amount" checked="" onchange="toggleCardInfo('auctions', 'bid-amount', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Ads Management Tab -->
+      <div id="settings-ads" class="settings-content-section" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+          <h3 style="margin: 0; color: var(--text-primary);">Deine Werbe-Tafeln</h3>
+          <button id="addAdBtn" class="add-ad-btn" onclick="openAdForm()" style="display: none;" title="Neue Tafel hinzufügen">
+            <img src="images/add-symbol.svg" alt="+">
+          </button>
+        </div>
+
+        <div id="adsManagementList" class="ads-management-list">
+          <!-- Wird dynamisch gefüllt -->
+          <div class="content-loader"><span class="loading-spinner"></span><span>Lade Werbe-Daten...</span></div>
+        </div>
+
+        <!-- Ad Edit Form (Modal-like snippet) -->
+        <div id="adEditForm" class="ad-edit-form" style="display: none;">
+          <h3 id="adFormTitle">Tafel bearbeiten</h3>
+          <input type="hidden" id="editAdId">
+          <div class="form-group">
+            <label>Bild URL</label>
+            <input type="text" id="adImageUrl" placeholder="https://...">
+          </div>
+          <div class="form-group">
+            <label>Überschrift</label>
+            <input type="text" id="adTitle" placeholder="Der Titel deiner Werbung">
+          </div>
+          <div class="form-group">
+            <label>Beschreibung</label>
+            <textarea id="adDescription" placeholder="Beschreibe dein Projekt..."></textarea>
+          </div>
+          <div id="adminAdFields" style="display: none;">
+            <div class="form-group">
+              <label>Besitzer User ID (Partner)</label>
+              <input type="text" id="adOwnerUid" placeholder="Firebase UID">
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <label style="margin: 0;">Discord Button</label>
+              <label class="toggle-switch">
+                <input type="checkbox" id="adDiscordEnabled">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <input type="text" id="adDiscordLink" placeholder="Discord Einladungslink" style="flex: 1;">
+              <input type="color" id="adDiscordColor" value="#5865F2" style="width: 45px; height: 38px; padding: 2px; cursor: pointer; border: 1px solid var(--border); border-radius: 8px;" title="Hover Farbe">
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <label style="margin: 0;">Zusätzliche Buttons (Max. 5)</label>
+              <button class="add-ad-btn" onclick="addCustomButtonInput()" style="width: 32px; height: 32px;" title="Button hinzufügen">
+                <img src="images/add-symbol.svg" alt="+" style="width: 18px; height: 18px;">
+              </button>
+            </div>
+            <div id="customButtonsContainer" class="custom-buttons-settings">
+              <!-- Dynamisch gefüllt -->
+            </div>
+          </div>
+          <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+            <button class="auth-submit-btn" onclick="handleAdSubmit()" style="margin: 0; flex: 1;">Speichern</button>
+            <button class="auth-submit-btn" onclick="closeAdForm()" style="margin: 0; flex: 1; background: transparent; border: 1px solid var(--border); color: var(--text-secondary);">Abbrechen</button>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Donations Management Tab -->
+      <div id="settings-donations" class="settings-content-section" style="display: none;">
+        <div style="margin-bottom: 2rem;">
+          <h3 style="margin: 0 0 1rem 0; color: var(--text-primary);">Spende hinzufügen</h3>
+          <div class="form-group">
+            <label>Spieler Name</label>
+            <input type="text" id="donationPlayerName" placeholder="z.B. _Moppel_">
+          </div>
+          <div class="form-group">
+            <label>Betrag (€)</label>
+            <input type="number" id="donationAmount" placeholder="z.B. 10.00" step="0.01">
+          </div>
+          <button class="auth-submit-btn" onclick="handleAddDonation()" style="margin-top: 0.5rem;">Spende speichern</button>
+        </div>
+
+        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+          <h3 style="margin: 0 0 1rem 0; color: var(--text-primary);">Spenden-Ziel (Goal)</h3>
+          <div class="form-group">
+            <label>Zielbetrag (€)</label>
+            <input type="number" id="donationGoalAmount" placeholder="z.B. 100.00" step="1">
+          </div>
+          <button class="auth-submit-btn" onclick="handleSetDonationGoal()" style="margin-top: 0.5rem;">Ziel setzen</button>
+        </div>
+
+        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+          <h3 style="margin: 0 0 1rem 0; color: var(--text-primary);">Aktuelle Spenden</h3>
+          <div id="donationsManagementList" class="ads-management-list">
+            <!-- Wird dynamisch gefüllt -->
+          </div>
+        </div>
+      </div>
+
+      <!-- User Codes Tab -->
+      <div id="settings-user-codes" class="settings-content-section" style="display: none;">
+        <div style="margin-bottom: 2rem;">
+          <h3 style="margin: 0 0 1rem 0; color: var(--text-primary);">User Code Suche</h3>
+          <p style="color: var(--text-secondary); margin-bottom: 1rem;">Suche nach dem User Code anhand der E-Mail-Adresse des Nutzers.</p>
+          <div class="form-group">
+            <label>E-Mail Adresse</label>
+            <input type="email" id="searchUserEmail" placeholder="user@example.com">
+          </div>
+          <button class="auth-submit-btn" onclick="handleUserCodeSearch()" style="margin-top: 0.5rem;">Suchen</button>
+        </div>
+
+        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+          <h3 style="margin: 0 0 1rem 0; color: var(--text-primary);">Ergebnis</h3>
+          <div id="userCodeResult" style="padding: 1rem; background: var(--surface); border-radius: 8px; border: 1px solid var(--border); min-height: 60px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary);">
+            Keine Suche durchgeführt.
+          </div>
+        </div>
+      </div>
+
+      <!-- Minecraft Account Tab -->
+      <div id="settings-minecraft" class="settings-content-section" style="display: none;">
+        <div id="minecraft-instruction-header" class="settings-minecraft-header">
+          <p>Verknüpfe deinen Minecraft-Account, um zusätzliche Funktionen zu nutzen.</p>
+        </div>
+
+        <div id="minecraft-unverified-ui">
+          <div class="settings-item">
+            <div class="settings-item-info">
+              <span class="settings-item-label">Minecraft Name</span>
+              <span class="settings-item-description">Gib deinen Ingame-Namen ein</span>
+            </div>
+            <div class="bg-url-input-wrapper" style="flex: 1; margin-left: 1rem;">
+              <input type="text" id="minecraft-ign-input" placeholder="z.B. Notch" style="width: 100%; padding: 0.5rem; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text-primary); font-size: 0.9rem;">
+            </div>
+          </div>
+
+          <div id="minecraft-verification-step" style="display: none;">
+            <div class="verification-code-box">
+              <span class="verification-code-label">Dein Code:</span>
+              <div class="verification-code-value" id="minecraft-generated-code">opsucht.infoXXXXXX</div>
+              <button class="verify-copy-btn" onclick="copyVerificationCode()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                  <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                </svg>
+              </button>
+            </div>
+
+            <div class="verification-instructions">
+              <ol>
+                <li>Benenne ein beliebiges Item in <strong><span id="instruction-code">CODE</span></strong> um.</li>
+                <li>Stelle dieses Item für mindestens <strong>10 Minuten</strong> in das Auktionshaus.</li>
+                <li>Klicke unten auf "Verifizierung starten".</li>
+              </ol>
+            </div>
+
+            <div id="verification-status-area" style="margin-top: 1.5rem; text-align: center;">
+              <div id="verification-spinner-container" style="display: none;">
+                <div class="verification-spinner"></div>
+              </div>
+              <p id="verification-timer-text" style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 0.5rem;"></p>
+              <button id="start-verification-btn" class="auth-submit-btn" onclick="startMinecraftVerification()" style="width: auto; padding: 0.75rem 2rem;">Verifizierung starten</button>
+            </div>
+          </div>
+
+          <button id="generate-code-btn" class="auth-submit-btn" onclick="prepareMinecraftVerification()" style="margin-top: 1rem;">Code generieren</button>
+        </div>
+
+        <div id="minecraft-verified-ui" style="display: none;">
+          <div class="verified-badge-container">
+            <div class="verified-badge">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              <span>Verifiziert</span>
+            </div>
+            <h3 id="verified-mc-name" style="margin: 1rem 0 0.5rem 0;">Username</h3>
+            <p id="verified-mc-uuid" style="font-size: 0.8rem; color: var(--text-secondary); font-family: monospace;">
+            </p>
+            <button class="settings-reset-btn" onclick="unlinkMinecraftAccount()" style="position: static; margin-top: 2rem; width: auto; background: rgba(255, 68, 68, 0.1); color: #ff4444; border-color: rgba(255, 68, 68, 0.2);">
+              Verknüpfung aufheben
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="settings-account" class="settings-content-section" style="display: none;">
+        <h3 style="margin: 0 0 1rem 0; color: var(--text-primary); font-size: 1rem;">Benachrichtigungen</h3>
+
+        <div class="settings-item" style="border-top: none; padding-top: 0;">
+          <div class="settings-item-info">
+            <span class="settings-item-label">Überbietungs-Meldungen</span>
+            <span class="settings-item-description">Sound & Popup bei Überbietung</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="accountOverbidToggle" onchange="toggleOverbidNotification(this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="settings-item">
+          <div class="settings-item-info">
+            <span class="settings-item-label">E-Mail Benachrichtigungen</span>
+            <span class="settings-item-description">Erinnerung 5 Min. vor Auktionsende</span>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="accountEmailToggle" onchange="toggleEmailNotification(this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <h3 style="margin: 2rem 0 1rem 0; color: var(--text-primary); font-size: 1rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+          Account Management</h3>
+
+        <div class="settings-item" style="border-top: none; padding-top: 0;">
+          <div class="settings-item-info">
+            <span class="settings-item-label">Account löschen</span>
+            <span class="settings-item-description">Lösche deinen Account und alle zugehörigen Daten
+              unwiderruflich.</span>
+          </div>
+          <button class="settings-reset-btn" onclick="handleDeleteAccount()" style="position: static; background: rgba(255, 68, 68, 0.1); color: #ff4444; border-color: rgba(255, 68, 68, 0.2);">
+            Löschen
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="authModal" class="modal">
+    <div class="modal-content" style="max-width: 420px;">
+      <button class="modal-close" onclick="closeAuthModal()" aria-label="Schließen">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <h2 id="authModalTitle" style="margin-top:0; text-align: center;">Anmelden</h2>
+
+      <div id="authError" class="auth-error" style="display: none;"></div>
+
+      <form id="authForm" onsubmit="handleAuthSubmit(event)">
+        <input type="email" id="authEmail" class="auth-input" placeholder="E-Mail Adresse" required="">
+        <input type="password" id="authPassword" class="auth-input" placeholder="Passwort" required="">
+        <input type="password" id="authPasswordConfirm" class="auth-input" placeholder="Passwort bestätigen" style="display: none;">
+        <button type="submit" class="auth-submit-btn" id="authSubmitBtn">Anmelden</button>
+      </form>
+
+      <p class="auth-switch" id="authSwitchText">
+        Noch kein Konto? <a onclick="switchAuthMode('register')">Registrieren</a>
+      </p>
+    </div>
+  </div>
+
+  <div id="rain-container"></div>
+  <canvas id="matrix-canvas"></canvas>
+
+  <div class="container">
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+      <div style="display: flex; gap: 1rem;">
+        <a onclick="openImpressumModal()" class="footer-link-desktop" style="font-size: 0.875rem; color: var(--text-secondary); cursor: pointer; text-decoration: none; background: none; border: none; padding: 0.5rem 0;">Impressum</a>
+        <a onclick="openPrivacyModal()" class="footer-link-desktop" style="font-size: 0.875rem; color: var(--text-secondary); cursor: pointer; text-decoration: none; background: none; border: none; padding: 0.5rem 0;">Datenschutz</a>
+        <a onclick="openAgbModal()" class="footer-link-desktop" style="font-size: 0.875rem; color: var(--text-secondary); cursor: pointer; text-decoration: none; background: none; border: none; padding: 0.5rem 0;">AGB</a>
+        <a onclick="openLegalModal()" class="footer-link-mobile" style="font-size: 0.875rem; color: var(--text-secondary); cursor: pointer; text-decoration: none; background: none; border: none; padding: 0.5rem 0; display: none;">Rechtliches</a>
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <a href="https://buymeacoffee.com/moppel3099" target="_blank" class="coffee-link" title="Buy me a coffee">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8h1a4 4 0 0 1 0 8h-1"></path>
+            <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path>
+            <line x1="6" y1="1" x2="6" y2="4"></line>
+            <line x1="10" y1="1" x2="10" y2="4"></line>
+            <line x1="14" y1="1" x2="14" y2="4"></line>
+          </svg>
+        </a>
+        <!-- User Area - zeigt Login-Button oder User-Info -->
+        <div id="userArea">
+          <button id="loginBtn" class="auth-header-btn" onclick="openAuthModal()">Anmelden</button>
+        </div>
+        <img src="images/Zahnrad.png" alt="Einstellungen" onclick="openSettingsModal()" class="settings-icon" style="width: 28px; height: 28px; cursor: pointer; filter: drop-shadow(0 0 8px var(--accent-glow)); transition: all 0.2s ease; opacity: 0.8;">
+      </div>
+    </div>
+
+    <h1><span>OPSUCHT.INFO</span></h1>
+
+    <div class="visitor-counter-wrapper">
+      <div id="visitor-counter" class="visitor-counter"></div>
+      <a href="https://discord.gg/DDAERmkk5Z" target="_blank" rel="noopener noreferrer" class="discord-header-btn" title="Discord Server">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 127.14 96.36">
+          <path fill="currentColor" d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"></path>
+        </svg>
+      </a>
+    </div>
+
+    <div class="header-controls">
+      <div id="tabs" class="tabs">
+        <button id="tab-market" onclick="showSection('market')">Markt<span class="loading-spinner"></span></button>
+        <button id="tab-auctions" onclick="showSection('auctions')">Auktionen<span class="loading-spinner"></span></button>
+        <button id="tab-deals" onclick="showSection('deals')">Schnäppchen</button>
+        <button id="tab-history" onclick="showSection('history')">Verlauf<span class="loading-spinner"></span></button>
+        <button id="tab-shards" onclick="showSection('shards')">Shards<span class="loading-spinner"></span></button>
+        <button id="tab-profile" onclick="showSection('profile')">Profil</button>
+      </div>
+    </div>
+
+    <div id="market" class="section">
+      <div class="market-controls">
+        <div class="search-wrapper" style="flex: 1;">
+          <input type="text" id="searchMarket" class="search-input" placeholder="🔍 Item oder Kategorie suchen …" oninput="renderMarket()">
+        </div>
+        <div class="market-filter-dropdown" id="marketTrendFilterContainer">
+          <button class="filter-btn" id="marketTrendBtn" onclick="toggleMarketFilterMenu(event)" title="Trends">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+          </button>
+          <div class="filter-menu" id="marketTrendMenu">
+            <div class="filter-menu-item active" data-period="none" onclick="selectMarketTrend('none')">Standard</div>
+            <div class="filter-menu-divider"></div>
+            <div class="filter-menu-item" data-period="3d" onclick="selectMarketTrend('3d')">📈 Anstieg (3 Tage)</div>
+            <div class="filter-menu-item" data-period="7d" onclick="selectMarketTrend('7d')">📈 Anstieg (7 Tage)</div>
+            <div class="filter-menu-item" data-period="30d" onclick="selectMarketTrend('30d')">📈 Anstieg (30 Tage)</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="trendProgressBarContainer" class="trend-progress-container">
+        <div class="trend-status-text">
+          <span id="trendStatusLabel">Analysiere Preise...</span>
+          <span id="trendStatusPercent">0%</span>
+        </div>
+        <div class="trend-progress-bar" id="trendProgressBar"></div>
+      </div>
+
+      <div id="marketContainer"></div>
+      <button class="refresh-btn" onclick="refreshTab('market', this)" title="Marktdaten neu laden">⟳ Aktualisieren</button>
+    </div>
+
+    <div id="auctions" class="section">
+      <div class="auction-controls">
+        <div class="filter-group">
+          <select id="auction-filters" class="auction-sort" onchange="setAuctionFilter(this.value)"></select>
+          <select id="auctionStarSelect" class="auction-sort" onchange="setStarFilter(this.value)" style="display: none;">
+            <option value="Alle">Alle Karten</option>
+            <option value="Booster">Booster Packs</option>
+            <option value="1">1 ★</option>
+            <option value="2">2 ★</option>
+            <option value="3">3 ★</option>
+            <option value="4/5">4/5 ★</option>
+          </select>
+        </div>
+        <select id="auctionSortSelect" class="auction-sort" onchange="setAuctionSort(this.value)">
+          <option value="END">Bald endend</option>
+          <option value="NEW">Neueste</option>
+          <option value="PRICE_HIGH">Höchster Preis</option>
+          <option value="PRICE_LOW">Niedrigster Preis</option>
+          <option value="BIDS_HIGH">Meiste Gebote</option>
+        </select>
+      </div>
+      <input type="text" id="searchAuctions" class="search-input" placeholder="🔍 Item oder Kategorie/Name suchen …" oninput="renderAuctions()">
+      <button class="refresh-btn" onclick="refreshTab('auctions', this)" title="Auktionen neu laden">⟳ Aktualisieren</button>
+      <div id="auctionContainer"></div>
+    </div>
+
+    <div id="deals" class="section">
+      <div class="auction-controls">
+        <div class="filter-group">
+          <select id="dealsMinDiscount" class="auction-sort" onchange="setDealsMinDiscount(this.value)">
+            <option value="5">Mind. 5% günstiger</option>
+            <option value="10">Mind. 10% günstiger</option>
+            <option value="20">Mind. 20% günstiger</option>
+            <option value="30">Mind. 30% günstiger</option>
+            <option value="50">Mind. 50% günstiger</option>
+          </select>
+        </div>
+        <select id="dealsSortSelect" class="auction-sort" onchange="setDealsSort(this.value)">
+          <option value="DISCOUNT_HIGH">Größter Rabatt</option>
+          <option value="END">Bald endend</option>
+          <option value="NEW">Neueste</option>
+          <option value="PRICE_HIGH">Höchster Preis</option>
+          <option value="PRICE_LOW">Niedrigster Preis</option>
+          <option value="BIDS_HIGH">Meiste Gebote</option>
+        </select>
+      </div>
+      <input type="text" id="searchDeals" class="search-input" placeholder="🔍 Item oder Kategorie suchen (Schnäppchen) …" oninput="renderDeals()">
+      <button class="refresh-btn" onclick="refreshTab('deals', this)" title="Schnäppchen neu laden">⟳ Aktualisieren</button>
+      <div id="dealsContainer"></div>
+    </div>
+
+    <div id="history" class="section">
+      <div class="auction-controls">
+        <div class="filter-group">
+          <select id="history-filters" class="auction-sort" onchange="setHistoryFilter(this.value)"></select>
+          <select id="historyStarSelect" class="auction-sort" onchange="setHistoryStarFilter(this.value)" style="display: none;">
+            <option value="Alle">Alle Karten</option>
+            <option value="Booster">Booster Packs</option>
+            <option value="1">1 ★</option>
+            <option value="2">2 ★</option>
+            <option value="3">3 ★</option>
+            <option value="4/5">4/5 ★</option>
+          </select>
+        </div>
+        <select id="historySortSelect" class="auction-sort" onchange="setHistorySort(this.value)">
+          <option value="NEW">Neueste</option>
+          <option value="PRICE_HIGH">Höchster Preis</option>
+          <option value="PRICE_LOW">Niedrigster Preis</option>
+        </select>
+      </div>
+      <input type="text" id="searchHistory" class="search-input" placeholder="🔍 Item oder Kategorie suchen (Verlauf) …" oninput="renderHistory()">
+      <button class="refresh-btn" onclick="refreshTab('history', this)" title="Verlauf neu laden">⟳ Aktualisieren</button>
+      <div id="historyContainer"></div>
+    </div>
+
+    <div id="shards" class="section">
+      <input type="text" id="searchShards" class="search-input" placeholder="🔍 Item suchen …" oninput="renderShards()">
+      <button class="refresh-btn" onclick="refreshTab('shards', this)" title="Shard-Kurse neu laden">⟳ Aktualisieren</button>
+      <div id="shardsContainer"></div>
+
+      <!-- Shard Rechner -->
+      <div id="shardCalculatorContainer" class="shard-calculator-section" style="margin-top: 3rem;"></div>
+    </div>
+
+
+
+    <div id="profile" class="section">
+      <div id="profileContainer"></div>
+    </div>
+
+  </div>
+
+  <div id="page-loader" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(1, 5, 20, 0.85); z-index: 10000; justify-content: center; align-items: center; color: white; font-family: sans-serif;">
+    <div class="content-loader" style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+      <span class="loading-spinner"></span>
+      <span>Lade Auktions-Details...</span>
+    </div>
+  </div>
+
+  <div id="chartModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal()" aria-label="Schließen">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <!-- Pin Button für den Markt -->
+      <button id="marketPinBtn" class="market-pin-btn" onclick="togglePin(App.currentItem)" style="display: none;" title="Item pinnen">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2">
+          </polygon>
+        </svg>
+      </button>
+
+      <h2 id="modalTitle" style="margin-top:0;"></h2>
+      <div class="chart-buttons">
+        <button onclick="loadHistory('DAILY', App.currentItem, App.currentItemType)">1T</button>
+        <button onclick="loadHistory('WEEKLY', App.currentItem, App.currentItemType)">7T</button>
+        <button onclick="loadHistory('MONTHLY', App.currentItem, App.currentItemType)">30T</button>
+      </div>
+      <div class="chart-container">
+        <div id="chartLoadingOverlay" class="chart-loading-overlay" style="display: none;">
+          <span class="loading-spinner"></span>
+          <span>Lade Daten...</span>
+        </div>
+        <canvas id="priceChart"></canvas>
+      </div>
+    </div>
+  </div>
+  <div id="profileSettingsModal" class="modal">
+    <div class="modal-content" style="max-width: 400px;">
+      <button class="modal-close" onclick="closeProfileSettingsModal()" aria-label="Schließen">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <h2 style="margin-top:0; text-align: center;">Profil Einstellungen</h2>
+
+      <div class="settings-item" style="border-top: none; padding-top: 1rem;">
+        <div class="settings-item-info">
+          <span class="settings-item-label">Überbietungs-Meldungen</span>
+          <span class="settings-item-description">Sound & Popup bei Überbietung</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="overbidNotificationToggle" onchange="toggleOverbidNotification(this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="settings-item">
+        <div class="settings-item-info">
+          <span class="settings-item-label">E-Mail Benachrichtigungen</span>
+          <span class="settings-item-description">Erinnerung 5 Min. vor Auktionsende</span>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="emailNotificationToggle" onchange="toggleEmailNotification(this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+
+    </div>
+  </div>
+
+  <div id="logoutModal" class="modal">
+    <div class="modal-content" style="max-width: 380px; text-align: center;">
+      <h2 style="margin-top: 0; margin-bottom: 1rem;">Abmelden?</h2>
+      <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Möchtest du dich wirklich aus deinem Konto
+        ausloggen?</p>
+      <div style="display: flex; gap: 1rem; justify-content: center;">
+        <button class="auth-submit-btn" onclick="confirmLogout()" style="margin-top: 0; background: var(--surface-card); border: 1px solid var(--border); color: var(--text-primary);">Ja,
+          abmelden</button>
+        <button class="auth-submit-btn" onclick="closeLogoutModal()" style="margin-top: 0; background: transparent; border: 1px solid transparent; color: var(--text-secondary);">Abbrechen</button>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div id="confirmModal" class="modal">
+    <div class="modal-content" style="max-width: 420px; text-align: center;">
+      <h2 id="confirmTitle" style="margin-top: 0; margin-bottom: 1rem;">Bestätigen</h2>
+      <p id="confirmMessage" style="color: var(--text-secondary); margin-bottom: 1.5rem;">Bist du sicher?</p>
+      <div style="display: flex; gap: 1rem; justify-content: center;">
+        <button id="confirmBtnYes" class="auth-submit-btn" style="margin-top: 0; background: var(--surface-card); border: 1px solid var(--border); color: var(--text-primary);">Bestätigen</button>
+        <button id="confirmBtnNo" class="auth-submit-btn" style="margin-top: 0; background: transparent; border: 1px solid transparent; color: var(--text-secondary);">Abbrechen</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="cookieConsentModal" class="cookie-consent-modal" style="display: none;">
+    <div class="cookie-consent-content">
+      <h2>Cookie-Richtlinie</h2>
+
+      <div id="cookieShortText">
+        <h3>1. Allgemeines</h3>
+        <p>Unsere Webseite verwendet sogenannte Cookies. Cookies sind kleine Textdateien, die auf deinem Endgerät
+          (Computer, Tablet oder Smartphone) gespeichert werden, wenn du unsere Webseite besuchst. Sie richten keinen
+          Schaden an und enthalten keine Viren. Cookies dienen dazu, unser Angebot nutzerfreundlicher, effektiver und
+          sicherer zu machen.</p>
+        <button class="cookie-read-more-btn" onclick="toggleCookieDetails()">Mehr lesen</button>
+      </div>
+
+      <div id="cookieFullText" style="display: none;">
+        <p>Einige Cookies werden nur für die Dauer deiner Sitzung gespeichert (Session-Cookies) und automatisch
+          gelöscht, sobald du deinen Browser schließt. Andere Cookies bleiben auf deinem Endgerät gespeichert, bis du
+          sie selbst löschst oder sie automatisch nach einer bestimmten Zeit ablaufen (persistente Cookies).</p>
+        <p>Cookies können von uns selbst (First-Party-Cookies) oder von Drittanbietern (Third-Party-Cookies) gesetzt
+          werden.</p>
+
+        <hr>
+
+        <h3>2. Welche Arten von Cookies wir verwenden</h3>
+        <h4>Notwendige Cookies</h4>
+        <p>Diese Cookies sind technisch erforderlich, damit die Webseite korrekt funktioniert. Ohne diese Cookies können
+          grundlegende Funktionen wie Navigation, Login oder Sicherheitseinstellungen nicht bereitgestellt werden.</p>
+        <p>Beispiele:</p>
+        <ul>
+          <li>Speicherung deiner Login-Sitzung</li>
+          <li>Sicherheit und Schutz vor Missbrauch</li>
+          <li>Speicherung von Einstellungen der Webseite</li>
+        </ul>
+        <p>Diese Cookies werden auf Grundlage unseres berechtigten Interesses gemäß Art. 6 Abs. 1 lit. f DSGVO
+          verwendet.</p>
+
+        <hr>
+
+        <h4>Funktionale Cookies</h4>
+        <p>Diese Cookies ermöglichen es unserer Webseite, sich an von dir getroffene Einstellungen zu erinnern, damit
+          dein Nutzungserlebnis verbessert wird.</p>
+        <p>Beispiele:</p>
+        <ul>
+          <li>gespeicherte Theme-Einstellungen (z. B. Light Mode / Dark Mode)</li>
+          <li>Anzeigeeinstellungen von Karten oder Diagrammen</li>
+          <li>individuelle Einstellungen im Nutzerprofil</li>
+        </ul>
+
+        <hr>
+
+        <h4>Analyse- und Statistik-Cookies</h4>
+        <p>Diese Cookies helfen uns zu verstehen, wie Besucher unsere Webseite nutzen. Dadurch können wir Inhalte und
+          Funktionen verbessern.</p>
+        <p>Beispiele:</p>
+        <ul>
+          <li>Anzahl der Seitenaufrufe</li>
+          <li>Nutzung bestimmter Funktionen</li>
+          <li>allgemeine Besucherstatistiken</li>
+        </ul>
+        <p>Die gesammelten Daten werden anonymisiert ausgewertet und nicht dazu verwendet, einzelne Personen zu
+          identifizieren.</p>
+
+        <hr>
+
+        <h4>Drittanbieter-Cookies</h4>
+        <p>In einigen Fällen können auch Cookies von Drittanbietern gesetzt werden, beispielsweise wenn externe Dienste
+          oder Inhalte eingebunden werden.</p>
+        <p>Dazu können gehören:</p>
+        <ul>
+          <li>Login-Dienste (Supabase Auth)</li>
+          <li>Analyse-Tools</li>
+          <li>eingebundene Inhalte oder APIs</li>
+        </ul>
+        <p>Diese Anbieter können eigene Datenschutzrichtlinien haben, auf die wir keinen direkten Einfluss haben.</p>
+
+        <hr>
+
+        <h3>3. Verwaltung von Cookies</h3>
+        <p>Du kannst deinen Browser so einstellen, dass:</p>
+        <ul>
+          <li>du über das Setzen von Cookies informiert wirst</li>
+          <li>Cookies nur im Einzelfall erlaubt werden</li>
+          <li>Cookies generell ausgeschlossen werden</li>
+          <li>Cookies automatisch gelöscht werden, wenn du den Browser schließt</li>
+        </ul>
+        <p>Die Verwaltung von Cookies erfolgt in den Einstellungen deines Browsers.</p>
+        <p>Bitte beachte, dass bei der Deaktivierung von Cookies möglicherweise nicht mehr alle Funktionen unserer
+          Webseite vollständig nutzbar sind.</p>
+
+        <hr>
+
+        <h3>4. Speicherdauer</h3>
+        <p>Cookies bleiben auf deinem Endgerät gespeichert, bis sie automatisch ablaufen oder du sie manuell löschst.
+          Die genaue Speicherdauer hängt vom jeweiligen Cookie ab.</p>
+        <p>Session-Cookies werden automatisch gelöscht, sobald du den Browser schließt.</p>
+
+        <hr>
+
+        <h3>5. Änderungen dieser Cookie-Richtlinie</h3>
+        <p>Wir behalten uns vor, diese Cookie-Richtlinie jederzeit anzupassen, um sie an neue gesetzliche Anforderungen
+          oder Änderungen unserer Dienste anzupassen.</p>
+        <p>Die jeweils aktuelle Version ist jederzeit auf unserer Webseite verfügbar.</p>
+
+        <hr>
+
+        <h3>6. Hinweis</h3>
+        <p>Unsere Webseite ist ein unabhängiges Community-Projekt und steht in keiner offiziellen Verbindung zu OPSUCHT
+          oder der Interwebmedia GmbH.</p>
+        <button class="cookie-read-more-btn" onclick="toggleCookieDetails()">Weniger anzeigen</button>
+      </div>
+
+      <div class="cookie-actions">
+        <button class="auth-submit-btn" onclick="acceptCookies()">Zustimmen</button>
+        <button class="auth-submit-btn decline-btn" onclick="declineCookies()">Ablehnen</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/supabase-compat.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/script.js"></script>
+
+  <div id="custom-cursor"></div>
+
+  <script>
+    // PWA: Service Worker registrieren (macht die App installierbar & offline-fähig).
+    // Funktioniert nur über https:// oder http://localhost, nicht per file://.
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js').catch((e) => {
+          console.log('Service Worker konnte nicht registriert werden:', e);
+        });
+      });
+    }
+  </script>
+
+
+</body></html>
