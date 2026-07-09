@@ -140,6 +140,7 @@ function showSection(id) {
   if (id === 'deals') renderDeals();
   if (id === 'history') renderHistory();
   if (id === 'shards') renderShards();
+  if (id === 'items') renderItemSearch();
 }
 
 function openModal() {
@@ -3057,6 +3058,10 @@ async function refreshTab(tabId, btn) {
         await loadShards();
         renderShards();
         break;
+      case 'items':
+        await loadAuctions(); // Item-Liste basiert auf Verlauf + aktiven Auktionen
+        renderItemSearch();
+        break;
     }
   } catch (e) {
     console.error('Fehler beim Aktualisieren:', e);
@@ -3070,6 +3075,245 @@ async function refreshTab(tabId, btn) {
     btn.classList.add('refresh-done');
     setTimeout(() => btn.classList.remove('refresh-done'), 1000);
   }
+}
+
+// =====================================================================
+// ITEMS-TAB: Datenbank aller je gesehenen Items (aus Verlauf + aktiven Auktionen)
+// Jedes Item genau EINMAL, durchsuchbar. Klick -> Durchschnitt + Kurve + Aktionen.
+// =====================================================================
+
+// Baut eine Map aller eindeutigen Items: Schlüssel = Item-Name.
+// Wert = ein repräsentatives Item-Objekt + Zähler für aktive/verkaufte Vorkommen.
+function buildItemIndex() {
+  const index = {};
+
+  const add = (itemObj, source) => {
+    if (!itemObj) return;
+    const name = itemObj.displayName ?? itemObj.material;
+    if (!name) return;
+    if (!index[name]) {
+      index[name] = { name, item: itemObj, activeCount: 0, soldCount: 0 };
+    }
+    if (source === 'active') index[name].activeCount++;
+    if (source === 'history') index[name].soldCount++;
+    // Ein Item mit Icon/Lore bevorzugt als repräsentatives Objekt behalten
+    if (!index[name].item.icon && itemObj.icon) index[name].item = itemObj;
+  };
+
+  // Aus aktiven Auktionen
+  (App.auctionsData || []).forEach(a => add(a.item, 'active'));
+
+  // Aus dem Verlauf
+  for (const itemName in App.auctionHistory) {
+    const sales = App.auctionHistory[itemName];
+    if (Array.isArray(sales)) {
+      sales.forEach(sale => add(sale.item || { material: itemName, displayName: itemName }, 'history'));
+    }
+  }
+
+  return index;
+}
+
+function renderItemSearch() {
+  const container = document.getElementById('itemsContainer');
+  if (!container) return;
+  const search = (document.getElementById('searchItems')?.value || '').toLowerCase();
+
+  const index = buildItemIndex();
+  let items = Object.values(index);
+
+  // Suche nach Name oder Material
+  if (search) {
+    items = items.filter(entry => {
+      const name = (entry.name || '').toLowerCase();
+      const mat = (entry.item?.material || '').toLowerCase();
+      return name.includes(search) || mat.includes(search);
+    });
+  }
+
+  // Alphabetisch sortieren
+  items.sort((a, b) => a.name.localeCompare(b.name, 'de'));
+
+  container.innerHTML = '';
+
+  if (items.length === 0) {
+    container.innerHTML = '<p style="text-align:center; color:var(--text-secondary); padding:2rem;">Keine Items gefunden. Die Liste füllt sich aus aktiven Auktionen und dem Verlauf.</p>';
+    return;
+  }
+
+  // Zähler oben
+  const countInfo = document.createElement('p');
+  countInfo.style.cssText = 'color:var(--text-secondary); margin:0.5rem 0 1rem; font-size:0.9rem;';
+  countInfo.textContent = `${items.length} ${items.length === 1 ? 'Item' : 'Items'} gefunden`;
+  container.appendChild(countInfo);
+
+  const grid = document.createElement('div');
+  grid.className = 'grid';
+  container.appendChild(grid);
+
+  // Aus Performance-Gründen erstmal maximal 120 anzeigen
+  const MAX = 120;
+  items.slice(0, MAX).forEach(entry => {
+    const card = document.createElement('div');
+    card.className = 'card animated';
+    const iconUrl = getAuctionItemIcon(entry.item);
+    const avg = getMonthlyAveragePerUnit({ item: entry.item });
+    card.innerHTML = `
+      <img src="${iconUrl}" alt="${entry.name}" loading="lazy" onerror="this.src='https://mcdf.wiki.gg/images/Barrier.png?ff8ff1'">
+      <h3 class="auction-name">${entry.name}</h3>
+      <div class="price-info"><span style="color:var(--text-secondary)">Ø 30 Tage:</span> ${avg !== null ? formatCardPrice(Math.round(avg)) : 'Keine Daten'}</div>
+      <div class="price-info" style="font-size:0.8rem; color:var(--text-secondary)">${entry.activeCount} aktiv · ${entry.soldCount} verkauft</div>
+    `;
+    card.onclick = () => openItemDetail(entry.name);
+    grid.appendChild(card);
+  });
+
+  if (items.length > MAX) {
+    const more = document.createElement('p');
+    more.style.cssText = 'text-align:center; color:var(--text-secondary); padding:1rem;';
+    more.textContent = `… und ${items.length - MAX} weitere. Nutze die Suche, um einzugrenzen.`;
+    container.appendChild(more);
+  }
+}
+
+// Öffnet die Detailansicht für ein Item (Durchschnitt + Kurve + Aktionen)
+async function openItemDetail(itemName) {
+  const modal = document.getElementById('itemDetailModal');
+  const body = document.getElementById('itemDetailBody');
+  if (!modal || !body) return;
+
+  // Repräsentatives Item-Objekt finden (aus aktiven Auktionen bevorzugt, sonst Verlauf)
+  let repItem = null;
+  const active = (App.auctionsData || []).find(a => (a.item?.displayName ?? a.item?.material) === itemName);
+  if (active) repItem = active.item;
+  if (!repItem) {
+    const sales = App.auctionHistory[itemName];
+    if (Array.isArray(sales) && sales.length) repItem = sales[sales.length - 1].item || { material: itemName, displayName: itemName };
+  }
+  if (!repItem) repItem = { material: itemName, displayName: itemName };
+
+  const pseudoAuction = { item: repItem };
+  const avgAll = (() => {
+    const sales = App.auctionHistory[itemName] || [];
+    if (!sales.length) return null;
+    const sum = sales.reduce((acc, s) => acc + salePricePerUnit(s), 0);
+    return Math.round(sum / sales.length);
+  })();
+  const avgMonth = getMonthlyAveragePerUnit(pseudoAuction);
+
+  const activeCount = (App.auctionsData || []).filter(a => (a.item?.displayName ?? a.item?.material) === itemName).length;
+  const soldCount = (App.auctionHistory[itemName] || []).length;
+
+  const iconUrl = getAuctionItemIcon(repItem);
+
+  body.innerHTML = `
+    <h2 style="padding-right:3rem;">${itemName}</h2>
+    <div class="auction-info-box">
+      <div class="info-item" style="text-align:center;">
+        <img src="${iconUrl}" alt="${itemName}" style="width:64px;height:64px;image-rendering:pixelated;" onerror="this.src='https://mcdf.wiki.gg/images/Barrier.png?ff8ff1'">
+      </div>
+      <div class="info-item"><strong>Durchschnitt</strong>${avgAll !== null ? `<span class="sell">${avgAll.toLocaleString('de-DE')}</span>` : '<span>Keine Daten</span>'}</div>
+      <div class="info-item"><strong>Durchschnitt (30 Tage)</strong>${avgMonth !== null ? `<span class="sell">${Math.round(avgMonth).toLocaleString('de-DE')}</span>` : '<span>Keine Daten</span>'}</div>
+      <div class="info-item"><strong>Aktive Auktionen</strong><span>${activeCount}</span></div>
+      <div class="info-item"><strong>Verkäufe im Verlauf</strong><span>${soldCount}</span></div>
+    </div>
+    <div id="itemDetailChart" style="margin:1rem 0;"></div>
+    <div class="item-detail-actions">
+      <button class="item-action-btn" id="itemGotoActive">Aktive Auktionen</button>
+      <button class="item-action-btn" id="itemGotoHistory">Auktionsverlauf</button>
+      <button class="item-action-btn item-remind-btn" id="itemRemindBtn" title="Bald verfügbar">🔔 Erinnerung</button>
+    </div>
+  `;
+
+  // Aktionen verdrahten
+  document.getElementById('itemGotoActive').onclick = () => {
+    closeItemDetail();
+    showSection('auctions');
+    const s = document.getElementById('searchAuctions');
+    if (s) { s.value = itemName; renderAuctions(); }
+  };
+  document.getElementById('itemGotoHistory').onclick = () => {
+    closeItemDetail();
+    showSection('history');
+    const s = document.getElementById('searchHistory');
+    if (s) { s.value = itemName; renderHistory(); }
+  };
+  // Erinnerungs-Button: noch ohne Funktion (kommt später)
+  document.getElementById('itemRemindBtn').onclick = () => {
+    showConfirmModal('Bald verfügbar', 'Die Erinnerungs-Funktion kommt in einem späteren Update.', 'Ok', false);
+  };
+
+  // Chart rendern (nutzt dieselbe Kurve wie im Verlauf, falls Daten vorhanden)
+  modal.classList.add('show');
+  document.body.classList.add('modal-open');
+
+  const sales = App.auctionHistory[itemName] || [];
+  if (sales.length >= 2) {
+    renderItemMiniChart(itemName, 'itemDetailChart');
+  } else {
+    const chartDiv = document.getElementById('itemDetailChart');
+    if (chartDiv) chartDiv.innerHTML = '<p style="text-align:center;color:var(--text-secondary);">Noch nicht genug Verkäufe für eine Kurve.</p>';
+  }
+}
+
+// Kleine Preis-Kurve für ein Item (Verkaufspreis pro Stück über Zeit)
+function renderItemMiniChart(itemName, containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const sales = (App.auctionHistory[itemName] || [])
+    .slice()
+    .sort((a, b) => new Date(a.soldAt || a.endTime) - new Date(b.soldAt || b.endTime));
+  if (sales.length < 2) return;
+
+  const points = sales.map(s => ({
+    t: new Date(s.soldAt || s.endTime).getTime(),
+    v: salePricePerUnit(s)
+  }));
+
+  const canvas = document.createElement('canvas');
+  canvas.width = container.clientWidth || 320;
+  canvas.height = 160;
+  container.innerHTML = '';
+  container.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+
+  const vals = points.map(p => p.v);
+  const minV = Math.min(...vals), maxV = Math.max(...vals);
+  const minT = points[0].t, maxT = points[points.length - 1].t;
+  const pad = 30;
+  const W = canvas.width, H = canvas.height;
+  const x = t => pad + ((t - minT) / (maxT - minT || 1)) * (W - pad * 1.5);
+  const y = v => H - pad - ((v - minV) / (maxV - minV || 1)) * (H - pad * 1.5);
+
+  // Linie
+  ctx.strokeStyle = '#22d3ee';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  points.forEach((p, i) => {
+    const px = x(p.t), py = y(p.v);
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  });
+  ctx.stroke();
+
+  // Punkte
+  ctx.fillStyle = '#22d3ee';
+  points.forEach(p => {
+    ctx.beginPath();
+    ctx.arc(x(p.t), y(p.v), 3, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Min/Max Labels
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = '11px sans-serif';
+  ctx.fillText(Math.round(maxV).toLocaleString('de-DE'), 2, y(maxV) + 4);
+  ctx.fillText(Math.round(minV).toLocaleString('de-DE'), 2, y(minV) + 4);
+}
+
+function closeItemDetail() {
+  const modal = document.getElementById('itemDetailModal');
+  if (modal) modal.classList.remove('show');
+  document.body.classList.remove('modal-open');
 }
 
 function parseShardItem(source) {
