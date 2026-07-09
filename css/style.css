@@ -3692,44 +3692,18 @@ input[type="color"]::-webkit-color-swatch {
   background: linear-gradient(135deg, #b91c1c, #ef4444);
 }
 
-/* --- Aktualisieren-Button in den Tabs --- */
-.refresh-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin: 0.75rem 0;
-  padding: 0.6rem 1.2rem;
-  background: var(--surface-card);
+/* --- Fix: Schließen-Button im Detail-Popup klar sichtbar & nicht vom Titel überlappt --- */
+#chartModal .modal-content h2 {
+  padding-right: 3rem; /* Platz für den X-Button freihalten */
+}
+
+#chartModal .modal-close {
+  background-color: var(--surface-card);
+  border: 1px solid var(--border);
   color: var(--text-primary);
-  border: 1px solid var(--accent-color1);
-  border-radius: var(--border-radius);
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
 }
 
-.refresh-btn:hover:not(:disabled) {
-  background: var(--accent-color1);
+#chartModal .modal-close:hover {
+  background-color: var(--accent-color1);
   color: #000;
-  box-shadow: 0 0 15px -3px var(--accent-color1);
-}
-
-.refresh-btn:disabled {
-  opacity: 0.6;
-  cursor: wait;
-}
-
-.refresh-btn.refreshing {
-  animation: refreshPulse 0.8s ease-in-out infinite;
-}
-
-.refresh-btn.refresh-done {
-  border-color: #22c55e;
-  color: #22c55e;
-}
-
-@keyframes refreshPulse {
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
 }
