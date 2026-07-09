@@ -1,6 +1,8 @@
 const App = {
   auctionSortMode: "END",
   auctionCategoryFilter: "Alle",
+  auctionItemFilter: "",
+  historyItemFilter: "",
   auctionStarFilter: "Alle",
   dealsSortMode: "DISCOUNT_HIGH",
   dealsMinDiscount: 5,
@@ -77,7 +79,7 @@ function showSection(id) {
   }
 
   document.querySelectorAll('.tabs button').forEach(btn => btn.classList.remove('active'));
-  const activeTabBtn = document.querySelector(`.tabs button[onclick="showSection('${id}')"]`);
+  const activeTabBtn = document.getElementById(`tab-${id}`);
   if (activeTabBtn) activeTabBtn.classList.add('active');
 
   if (id === 'profile') {
@@ -141,6 +143,15 @@ function showSection(id) {
   if (id === 'history') renderHistory();
   if (id === 'shards') renderShards();
   if (id === 'items') renderItemSearch();
+}
+
+// Tab-Wechsel über die obere Leiste: hebt einen aktiven Item-Filter auf,
+// damit man dort wieder ALLE Auktionen/den ganzen Verlauf sieht.
+function goToTab(id) {
+  App.auctionItemFilter = '';
+  App.historyItemFilter = '';
+  App.selectedPlayerUuid = null;
+  showSection(id);
 }
 
 function openModal() {
@@ -2229,9 +2240,10 @@ function createPlayerCard(uuid, username) {
       type: 'player_list',
       section: activeSection,
       category: App.auctionCategoryFilter,
-      search: searchInput.value
+      search: searchInput ? searchInput.value : ''
     };
-    searchInput.value = ''; // Leert das Suchfeld für eine saubere Profilansicht
+    if (searchInput) searchInput.value = ''; // Leert das Suchfeld (falls vorhanden)
+    App.auctionItemFilter = '';
     renderAuctions();
   };
   return card;
@@ -2249,7 +2261,7 @@ function sortAuctionsByMode(a, b) {
 
 async function renderAuctions(isPagination = false) {
   const container = document.getElementById("auctionContainer");
-  const search = document.getElementById("searchAuctions").value.toLowerCase();
+  const search = (App.auctionItemFilter || "").toLowerCase();
 
   const currentStateStr = `${search}-${App.auctionCategoryFilter}-${App.auctionStarFilter}-${App.auctionSortMode}`;
   if (App.auctionLastState !== currentStateStr && !isPagination) {
@@ -2394,6 +2406,10 @@ async function renderAuctions(isPagination = false) {
 
 
   animateCardsWave(document.getElementById('auctions'));
+  renderFilterChip('auctionContainer', App.auctionItemFilter, () => {
+    App.auctionItemFilter = '';
+    renderAuctions();
+  });
 }
 
 
@@ -2470,7 +2486,7 @@ function sortDealsByMode(a, b) {
 function renderDeals(isPagination = false) {
   const container = document.getElementById("dealsContainer");
   if (!container) return;
-  const search = document.getElementById("searchDeals").value.toLowerCase();
+  const search = "";
 
   const stateStr = `${search}-${App.dealsMinDiscount}-${App.dealsSortMode}`;
   if (App.dealsLastState !== stateStr && !isPagination) {
@@ -2756,10 +2772,9 @@ function setupHistoryFilters() {
 
 async function renderHistory(isPagination = false) {
   const container = document.getElementById("historyContainer");
-  const searchInput = document.getElementById("searchHistory");
-  if (!container || !searchInput) return;
+  if (!container) return;
 
-  const search = searchInput.value.toLowerCase();
+  const search = (App.historyItemFilter || "").toLowerCase();
 
   if (!isPagination) {
     container.innerHTML = `<div class="content-loader"><span class="loading-spinner"></span><span>Lade Verlauf...</span></div>`;
@@ -2881,6 +2896,10 @@ async function renderHistory(isPagination = false) {
   }
 
   animateCardsWave(document.getElementById('history'));
+  renderFilterChip('historyContainer', App.historyItemFilter, () => {
+    App.historyItemFilter = '';
+    renderHistory();
+  });
 }
 
 function calculateAuctionPriceTrend(auction) {
@@ -3228,15 +3247,17 @@ async function openItemDetail(itemName) {
   // Aktionen verdrahten
   document.getElementById('itemGotoActive').onclick = () => {
     closeItemDetail();
+    App.auctionItemFilter = itemName;
+    App.selectedPlayerUuid = null;
     showSection('auctions');
-    const s = document.getElementById('searchAuctions');
-    if (s) { s.value = itemName; renderAuctions(); }
+    renderAuctions();
   };
   document.getElementById('itemGotoHistory').onclick = () => {
     closeItemDetail();
+    App.historyItemFilter = itemName;
+    App.selectedPlayerUuid = null;
     showSection('history');
-    const s = document.getElementById('searchHistory');
-    if (s) { s.value = itemName; renderHistory(); }
+    renderHistory();
   };
   // Erinnerungs-Button: noch ohne Funktion (kommt später)
   document.getElementById('itemRemindBtn').onclick = () => {
@@ -3316,6 +3337,18 @@ function closeItemDetail() {
   document.body.classList.remove('modal-open');
 }
 
+// Zeigt oben im Container einen "Filter: [Item] ✕"-Hinweis, wenn ein
+// Item-Filter aktiv ist (gesetzt über den Items-Tab). Klick auf ✕ hebt ihn auf.
+function renderFilterChip(containerId, filterValue, clearFn) {
+  const container = document.getElementById(containerId);
+  if (!container || !filterValue) return;
+  const chip = document.createElement('div');
+  chip.className = 'item-filter-chip';
+  chip.innerHTML = `Filter: <strong>${filterValue}</strong> <span class="chip-x" title="Filter entfernen">✕</span>`;
+  chip.querySelector('.chip-x').onclick = clearFn;
+  container.prepend(chip);
+}
+
 function parseShardItem(source) {
   if (!source) return { name: "Unbekannt", isCustom: false, material: null };
 
@@ -3365,7 +3398,7 @@ function parseShardItem(source) {
 
 async function renderShards() {
   const container = document.getElementById("shardsContainer");
-  const search = document.getElementById("searchShards").value.toLowerCase();
+  const search = "";
   container.innerHTML = `<div class="content-loader"><span class="loading-spinner"></span><span>Lade Shards...</span></div>`;
   await new Promise(resolve => requestAnimationFrame(resolve));
   container.innerHTML = "";
