@@ -3743,3 +3743,31 @@ input[type="color"]::-webkit-color-swatch {
   background: var(--text-secondary);
   color: #000;
 }
+
+/* --- Item-Filter-Chip (in Auktionen/Verlauf, gesetzt über den Items-Tab) --- */
+.item-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  padding: 0.5rem 1rem;
+  background: var(--surface-card);
+  border: 1px solid var(--accent-color1);
+  border-radius: var(--border-radius);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.item-filter-chip .chip-x {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--text-secondary);
+  padding: 0 0.3rem;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.item-filter-chip .chip-x:hover {
+  background: #ef4444;
+  color: #fff;
+}
