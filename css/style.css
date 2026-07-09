@@ -3707,3 +3707,39 @@ input[type="color"]::-webkit-color-swatch {
   background-color: var(--accent-color1);
   color: #000;
 }
+
+/* --- Items-Tab: Detail-Aktionen --- */
+.item-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.item-action-btn {
+  flex: 1 1 auto;
+  min-width: 120px;
+  padding: 0.75rem 1rem;
+  background: var(--surface-card);
+  color: var(--text-primary);
+  border: 1px solid var(--accent-color1);
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.item-action-btn:hover {
+  background: var(--accent-color1);
+  color: #000;
+}
+
+.item-remind-btn {
+  border-color: var(--text-secondary);
+  opacity: 0.85;
+}
+
+.item-remind-btn:hover {
+  background: var(--text-secondary);
+  color: #000;
+}
