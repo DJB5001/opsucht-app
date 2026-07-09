@@ -197,23 +197,9 @@ function handleEscKey(event) {
   if (event.key === 'Escape') closeModal();
 }
 
-function openImpressumModal() {
-  const modal = document.getElementById("impressumModal");
-  modal.classList.add("show");
-  document.body.classList.add('modal-open');
-  window.addEventListener('keydown', handleImpressumEscKey);
-}
-
-function closeImpressumModal() {
-  const modal = document.getElementById("impressumModal");
-  modal.classList.remove("show");
-  document.body.classList.remove('modal-open');
-  window.removeEventListener('keydown', handleImpressumEscKey);
-}
-
-function handleImpressumEscKey(event) {
-  if (event.key === 'Escape') closeImpressumModal();
-}
+function openImpressumModal() { /* Impressum entfernt */ }
+function closeImpressumModal() { /* Impressum entfernt */ }
+function handleImpressumEscKey(event) { /* Impressum entfernt */ }
 
 function openPrivacyModal() {
   const modal = document.getElementById("privacyModal");
@@ -3986,7 +3972,7 @@ async function openAuctionChart(auction) {
   if (sellerProfileEl && auction.seller) {
     sellerProfileEl.onclick = () => {
       if (document.getElementById('chartModal').classList.contains('show')) closeModal();
-      if (document.getElementById('impressumModal').classList.contains('show')) closeImpressumModal();
+      if (document.getElementById('impressumModal')?.classList.contains('show')) closeImpressumModal();
       if (document.getElementById('privacyModal').classList.contains('show')) closePrivacyModal();
 
       const activeSection = document.querySelector('.section.active')?.id || 'auctions';
