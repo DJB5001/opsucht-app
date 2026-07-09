@@ -1173,13 +1173,13 @@
 
     <div class="header-controls">
       <div id="tabs" class="tabs">
-        <button id="tab-market" onclick="showSection('market')">Markt<span class="loading-spinner"></span></button>
-        <button id="tab-auctions" onclick="showSection('auctions')">Auktionen<span class="loading-spinner"></span></button>
-        <button id="tab-deals" onclick="showSection('deals')">Schnäppchen</button>
-        <button id="tab-history" onclick="showSection('history')">Verlauf<span class="loading-spinner"></span></button>
-        <button id="tab-shards" onclick="showSection('shards')">Shards<span class="loading-spinner"></span></button>
-        <button id="tab-items" onclick="showSection('items')">Items</button>
-        <button id="tab-profile" onclick="showSection('profile')">Profil</button>
+        <button id="tab-market" onclick="goToTab('market')">Markt<span class="loading-spinner"></span></button>
+        <button id="tab-auctions" onclick="goToTab('auctions')">Auktionen<span class="loading-spinner"></span></button>
+        <button id="tab-deals" onclick="goToTab('deals')">Schnäppchen</button>
+        <button id="tab-history" onclick="goToTab('history')">Verlauf<span class="loading-spinner"></span></button>
+        <button id="tab-shards" onclick="goToTab('shards')">Shards<span class="loading-spinner"></span></button>
+        <button id="tab-items" onclick="goToTab('items')">Items</button>
+        <button id="tab-profile" onclick="goToTab('profile')">Profil</button>
       </div>
     </div>
 
@@ -1235,7 +1235,6 @@
           <option value="BIDS_HIGH">Meiste Gebote</option>
         </select>
       </div>
-      <input type="text" id="searchAuctions" class="search-input" placeholder="🔍 Item oder Kategorie/Name suchen …" oninput="renderAuctions()">
       <button class="refresh-btn" onclick="refreshTab('auctions', this)" title="Auktionen neu laden">⟳ Aktualisieren</button>
       <div id="auctionContainer"></div>
     </div>
@@ -1260,7 +1259,6 @@
           <option value="BIDS_HIGH">Meiste Gebote</option>
         </select>
       </div>
-      <input type="text" id="searchDeals" class="search-input" placeholder="🔍 Item oder Kategorie suchen (Schnäppchen) …" oninput="renderDeals()">
       <button class="refresh-btn" onclick="refreshTab('deals', this)" title="Schnäppchen neu laden">⟳ Aktualisieren</button>
       <div id="dealsContainer"></div>
     </div>
@@ -1284,13 +1282,11 @@
           <option value="PRICE_LOW">Niedrigster Preis</option>
         </select>
       </div>
-      <input type="text" id="searchHistory" class="search-input" placeholder="🔍 Item oder Kategorie suchen (Verlauf) …" oninput="renderHistory()">
       <button class="refresh-btn" onclick="refreshTab('history', this)" title="Verlauf neu laden">⟳ Aktualisieren</button>
       <div id="historyContainer"></div>
     </div>
 
     <div id="shards" class="section">
-      <input type="text" id="searchShards" class="search-input" placeholder="🔍 Item suchen …" oninput="renderShards()">
       <button class="refresh-btn" onclick="refreshTab('shards', this)" title="Shard-Kurse neu laden">⟳ Aktualisieren</button>
       <div id="shardsContainer"></div>
 
