@@ -3,7 +3,7 @@
 // Live-Daten (Auktionen, Markt, Verlauf) werden weiterhin frisch aus dem
 // Netz geladen und NICHT gecached.
 
-const CACHE_NAME = 'opsucht-static-v1';
+const CACHE_NAME = 'opsucht-static-v2';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -56,8 +56,16 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Statische Dateien: Cache-first
+  // Statische Dateien: NETWORK-FIRST.
+  // Immer zuerst die frische Version aus dem Netz holen und in den Cache legen.
+  // Nur wenn offline (Netz schlägt fehl), aus dem Cache bedienen.
   event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request))
+    fetch(event.request)
+      .then((response) => {
+        const copy = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy)).catch(() => {});
+        return response;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
