@@ -1178,6 +1178,7 @@
         <button id="tab-deals" onclick="showSection('deals')">Schnäppchen</button>
         <button id="tab-history" onclick="showSection('history')">Verlauf<span class="loading-spinner"></span></button>
         <button id="tab-shards" onclick="showSection('shards')">Shards<span class="loading-spinner"></span></button>
+        <button id="tab-items" onclick="showSection('items')">Items</button>
         <button id="tab-profile" onclick="showSection('profile')">Profil</button>
       </div>
     </div>
@@ -1295,6 +1296,25 @@
 
       <!-- Shard Rechner -->
       <div id="shardCalculatorContainer" class="shard-calculator-section" style="margin-top: 3rem;"></div>
+    </div>
+
+    <div id="items" class="section">
+      <input type="text" id="searchItems" class="search-input" placeholder="🔍 Item suchen (alle je gesehenen Items) …" oninput="renderItemSearch()">
+      <button class="refresh-btn" onclick="refreshTab('items', this)" title="Item-Liste neu laden">⟳ Aktualisieren</button>
+      <div id="itemsContainer"></div>
+    </div>
+
+    <!-- Item-Detail Modal -->
+    <div id="itemDetailModal" class="modal">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeItemDetail()" aria-label="Schließen">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        <div id="itemDetailBody"></div>
+      </div>
     </div>
 
 
